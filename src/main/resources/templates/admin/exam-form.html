@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Exam Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <h3><i class="fas fa-file-alt"></i> 
+        <span th:if="${exam.examId == 0}">Add New Exam</span>
+        <span th:unless="${exam.examId == 0}">Update Exam</span>
+    </h3>
+
+    <form th:action="@{/admin/saveExam}" method="POST" th:object="${exam}">
+        <input type="hidden" th:field="*{examId}" />
+        <input type="hidden" id="dayOfWeek" name="dayOfWeek" th:field="*{dayOfWeek}" />
+
+        <div class="mb-3">
+            <label for="examType" class="form-label">Exam Type</label>
+            <input type="text" class="form-control" id="examType" th:field="*{examType}" placeholder="e.g. Midterm, Final" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="date" class="form-label">Date</label>
+            <input type="date" class="form-control" id="date" th:field="*{date}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="hour" class="form-label">Hour</label>
+            <input type="text" class="form-control" id="hour" th:field="*{hour}" placeholder="e.g. 09:00" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="lessonId" class="form-label">Lesson</label>
+            <select class="form-select" id="lessonId" name="lessonId">
+                <option value="">Select Lesson</option>
+                <option th:each="lesson : ${lessons}" th:value="${lesson.lessonId}" th:text="${lesson.lessonName}"></option>
+            </select>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i> Save
+            </button>
+            <a th:href="@{/admin/examList}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const turkishDayNames = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
+
+    document.getElementById('date').addEventListener('change', function() {
+        if (this.value) {
+            const date = new Date(this.value + 'T00:00:00');
+            const dayIndex = date.getDay();
+            const turkishDay = turkishDayNames[dayIndex];
+            document.getElementById('dayOfWeek').value = turkishDay;
+        }
+    });
+
+    // Form yüklendiğinde de günü hesapla
+    window.addEventListener('load', function() {
+        const dateInput = document.getElementById('date');
+        if (dateInput.value) {
+            const date = new Date(dateInput.value + 'T00:00:00');
+            const dayIndex = date.getDay();
+            const turkishDay = turkishDayNames[dayIndex];
+            document.getElementById('dayOfWeek').value = turkishDay;
+        }
+    });
+</script>
+</body>
+</html>

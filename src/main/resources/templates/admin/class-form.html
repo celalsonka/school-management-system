@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Class Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-layer-group"></i>
+                        <span th:if="${class.classId == null}">Add New Class</span>
+                        <span th:if="${class.classId != null}">Update Class</span>
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/admin/saveClass}" th:object="${class}" method="POST">
+                        <input type="hidden" th:field="*{classId}"/>
+
+                        <div class="mb-3">
+                            <label for="className" class="form-label">Class Name <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{className}" class="form-control" id="className" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="classLevel" class="form-label">Class Level <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{classLevel}" class="form-control" id="classLevel" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="lesson" class="form-label">Lesson</label>
+                            <select th:field="*{lesson.lessonId}" class="form-select" id="lesson">
+                                <option value="">Select a lesson</option>
+                                <option th:each="lesson : ${lessons}" 
+                                        th:value="${lesson.lessonId}" 
+                                        th:text="${lesson.lessonName}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a th:href="@{/admin/classList}" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                <span th:if="${class.classId == null}">Add Class</span>
+                                <span th:if="${class.classId != null}">Update Class</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

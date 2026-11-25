@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Absence Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-clock"></i> Absence Record</h4>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/admin/saveAbsence}" th:object="${absence}" method="post">
+                        <!-- Hidden ID for updates -->
+                        <input type="hidden" name="absenceId" th:value="${absence.absenceId}">
+                        <input type="hidden" name="studentId" th:value="${student.id}">
+
+                        <div class="mb-3">
+                            <label for="studentName" class="form-label">Student</label>
+                            <input type="text" class="form-control" id="studentName" 
+                                   th:value="${student.person.firstName + ' ' + student.person.lastName}" disabled>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="date" class="form-label">Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="date" th:field="*{date}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="absenceType" class="form-label">Absence Type <span class="text-danger">*</span></label>
+                            <select class="form-control" id="absenceType" th:field="*{absenceType}" required>
+                                <option value="">-- Select Type --</option>
+                                <option value="Excused">Excused</option>
+                                <option value="Unexcused">Unexcused</option>
+                                <option value="Sick Leave">Sick Leave</option>
+                                <option value="Permission">Permission</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="lessonHour" class="form-label">Lesson Hour</label>
+                            <input type="number" class="form-control" id="lessonHour" th:field="*{lessonHour}">
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Record
+                            </button>
+                            <a th:href="@{/admin/absenceList(studentId=${student.id})}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

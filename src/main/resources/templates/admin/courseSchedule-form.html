@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Course Schedule</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <h3>Course Schedule for Classroom <span th:text="${classroomCode}"></span></h3>
+    
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Hata!</strong> <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Ders veya Sınav Ekle</h5>
+        </div>
+        <div class="card-body">
+            <form th:action="@{'/admin/classroom/' + ${classroomCode} + '/courseschedule'}" method="post">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="day" class="form-label">Gün</label>
+                        <select class="form-select" id="day" name="day" required>
+                            <option value="">Gün Seçiniz</option>
+                            <option value="Pazartesi">Pazartesi</option>
+                            <option value="Salı">Salı</option>
+                            <option value="Çarşamba">Çarşamba</option>
+                            <option value="Perşembe">Perşembe</option>
+                            <option value="Cuma">Cuma</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="lessonHour" class="form-label">Saat</label>
+                        <input type="text" class="form-control" id="lessonHour" name="lessonHour" placeholder="Örn: 09:00" required>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="lessonId" class="form-label">Ders</label>
+                        <select class="form-select" id="lessonId" name="lessonId">
+                            <option value="">Ders Seçiniz (İsteğe Bağlı)</option>
+                            <option th:each="lesson : ${lessons}" th:value="${lesson.lessonId}" th:text="${lesson.lessonName}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="examId" class="form-label">Sınav</label>
+                        <select class="form-select" id="examId" name="examId">
+                            <option value="">Sınav Seçiniz (İsteğe Bağlı)</option>
+                            <option th:each="exam : ${exams}" th:value="${exam.examId}" 
+                                    th:text="${exam.examType} + ' (' + ${exam.date} + ' ' + ${exam.hour} + ')'"
+                                    th:attr="data-date=${exam.date}, data-hour=${exam.hour}, data-day=${exam.dayOfWeek}, data-lesson-id=${exam.lesson != null ? exam.lesson.lessonId : ''}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="alert alert-info" role="alert">
+                    <strong>Uyarı:</strong> Aynı saatte ya bir ders ya da bir sınav ekleyebilirsiniz, ikisini aynı anda ekleyemezsiniz!
+                </div>
+
+                <button type="submit" class="btn btn-success">Ekle</button>
+                <a th:href="@{/admin/classroomList}" class="btn btn-secondary">İptal</a>
+            </form>
+        </div>
+    </div>
+
+    <hr>
+
+    <h4>Mevcut Zaman Çizelgesi</h4>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+            <tr>
+                <th>Gün</th>
+                <th>Saat</th>
+                <th>Ders</th>
+                <th>Sınav (Tür - Tarih - Saat)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="schedule : ${schedules}">
+                <td th:text="${schedule.day}"></td>
+                <td th:text="${schedule.lessonHour}"></td>
+                <td th:text="${schedule.lesson != null ? schedule.lesson.lessonName : '-'}"></td>
+                <td th:text="${schedule.exam != null ? schedule.exam.examType + ' - ' + schedule.exam.date + ' ' + schedule.exam.hour : '-'}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(schedules)}">
+                <td colspan="4" class="text-center text-muted">Henüz zaman çizelgesi eklenmemiş</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a th:href="@{/admin/classroomList}" class="btn btn-secondary mt-3">Geri Dön</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('examId').addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const examDate = selectedOption.getAttribute('data-date');
+        const examHour = selectedOption.getAttribute('data-hour');
+        const examDay = selectedOption.getAttribute('data-day');
+        const lessonId = selectedOption.getAttribute('data-lesson-id');
+        
+        if (examDate && examHour && examDay) {
+            document.getElementById('lessonHour').value = examHour;
+            document.getElementById('day').value = examDay;
+        }
+        
+        // Auto-select the lesson if exam has a lesson
+        if (lessonId) {
+            document.getElementById('lessonId').value = lessonId;
+            document.getElementById('lessonId').disabled = true;
+        } else {
+            document.getElementById('lessonId').disabled = false;
+        }
+    });
+</script>
+</body>
+</html>

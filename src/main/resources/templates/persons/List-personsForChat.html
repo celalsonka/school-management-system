@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Person Directory</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+<body>
+
+<div class="container">
+    <h3>Person Directory</h3>
+    <hr>
+    <table class="table table-bordered table -striped">
+        <thead class="table-dark">
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="tempPerson : ${persons}">
+            <td th:text="${tempPerson.firstName}"/>
+            <td th:text="${tempPerson.lastName}"/>
+
+            <td>
+                <a th:href="@{/persons/showDialog(personId1=${person1.id} ,personId2=${tempPerson.id})}"
+                   class="btn btn-info btn-sm">
+                    Dialog
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lesson Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-book"></i>
+                        <span th:if="${lesson.lessonId == null}">Add New Lesson</span>
+                        <span th:if="${lesson.lessonId != null}">Update Lesson</span>
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Error message display -->
+                    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Error!</strong> <span th:text="${error}">Error message</span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    
+                    <form th:action="@{/admin/saveLesson}" th:object="${lesson}" method="POST">
+                        <!-- Hidden field for ID -->
+                        <input type="hidden" th:field="*{lessonId}"/>
+
+                        <!-- Lesson Code -->
+                        <div class="mb-3">
+                            <label for="lessonCode" class="form-label">Lesson Code <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{lessonCode}" class="form-control" id="lessonCode" 
+                                   placeholder="Enter lesson code" required>
+                            <div class="form-text">Unique identifier for the lesson</div>
+                        </div>
+
+                        <!-- Lesson Name -->
+                        <div class="mb-3">
+                            <label for="lessonName" class="form-label">Lesson Name <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{lessonName}" class="form-control" id="lessonName" 
+                                   placeholder="Enter lesson name" required>
+                            <div class="form-text">Full name of the lesson</div>
+                        </div>
+
+                        <!-- Classroom Selection -->
+                        <div class="mb-3">
+                            <label for="classroomCode" class="form-label">Classroom <span class="text-danger">*</span></label>
+                            <select name="classroomCode" class="form-select" id="classroomCode" required>
+                                <option value="">-- Select a classroom --</option>
+                                <option th:each="classroom : ${classrooms}" 
+                                        th:value="${classroom.classroomCode}"
+                                        th:text="${classroom.classroomCode + ' - ' + classroom.location + ' (Capacity: ' + classroom.capacity + ')'}"
+                                        th:selected="${lesson.classroom != null && lesson.classroom.classroomCode == classroom.classroomCode}">
+                                </option>
+                            </select>
+                            <div class="form-text">Assign this lesson to a specific classroom (required)</div>
+                        </div>
+
+                        <!-- Teacher Selection (Multiple) -->
+                        <div class="mb-3">
+                            <label for="teacherIds" class="form-label">Teachers</label>
+                            <select name="teacherIds" class="form-select" id="teacherIds" multiple size="5">
+                                <option th:each="teacher : ${teachers}" 
+                                        th:value="${teacher.id}"
+                                        th:text="${teacher.person.firstName + ' ' + teacher.person.lastName + ' (' + teacher.employeeNumber + ')'}"
+                                        th:selected="${lesson.teachers.contains(teacher)}">
+                                </option>
+                            </select>
+                            <div class="form-text">Hold Ctrl (Cmd on Mac) to select multiple teachers</div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a th:href="@{/admin/lessonList}" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                <span th:if="${lesson.lessonId == null}">Add Lesson</span>
+                                <span th:if="${lesson.lessonId != null}">Update Lesson</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

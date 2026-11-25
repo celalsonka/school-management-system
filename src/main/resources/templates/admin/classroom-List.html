@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Classroom Directory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .average-display {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3><i class="fas fa-door-open"></i> Classroom Directory</h3>
+        <a th:href="@{/admin/showFormForAddClassroom}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add New Classroom
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Code</th>
+                        <th>Capacity</th>
+                        <th>Type</th>
+                        <th>Location</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="classroom : ${classrooms}" th:id="'row-' + ${classroom.classroomCode}">
+                        <td th:text="${classroom.classroomCode}"></td>
+                        <td th:text="${classroom.capacity}"></td>
+                        <td th:text="${classroom.type}"></td>
+                        <td th:text="${classroom.location}"></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-info show-average-btn" 
+                                    th:data-classroom="${classroom.classroomCode}"
+                                    th:data-average="${classroomAverages[classroom.classroomCode]}"
+                                    onclick="toggleAverage(this)">
+                                <i class="fas fa-chart-line"></i> Show Average
+                            </button>
+                            <div class="average-display" th:id="'avg-' + ${classroom.classroomCode}">
+                                <strong>Average Score:</strong>
+                                <span class="badge ms-2"></span>
+                            </div>
+                            <br>
+                            <a th:href="@{/admin/showFormForUpdateClassroom(classroomCode=${classroom.classroomCode})}"
+                               class="btn btn-sm btn-outline-primary mt-2">
+                                <i class="fas fa-edit"></i> Update
+                            </a>
+                            <a th:href="@{/admin/deleteClassroom(classroomCode=${classroom.classroomCode})}"
+                               class="btn btn-sm btn-outline-danger mt-2"
+                               onclick="return confirm('Are you sure you want to delete this classroom?');">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                            <a th:href="@{'/admin/classroom/' + ${classroom.classroomCode} + '/courseschedule'}"
+                               class="btn btn-sm btn-outline-success mt-2">
+                                <i class="fas fa-calendar-alt"></i> CourseSchedule
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(classrooms)}">
+                        <td colspan="5" class="text-center text-muted">No classrooms found</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a th:href="@{/admin/showCatalog}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Catalog
+        </a>
+    </div>
+</div>
+
+<script>
+function toggleAverage(button) {
+    const classroomCode = button.getAttribute('data-classroom');
+    const averageValue = parseFloat(button.getAttribute('data-average'));
+    const avgDiv = document.getElementById('avg-' + classroomCode);
+    const badge = avgDiv.querySelector('.badge');
+    
+    if (avgDiv.style.display === 'none' || avgDiv.style.display === '') {
+        // Show the average
+        let badgeClass = 'bg-secondary';
+        let displayValue = 'N/A';
+        
+        if (averageValue !== null && !isNaN(averageValue)) {
+            displayValue = averageValue.toFixed(2);
+            if (averageValue >= 85) {
+                badgeClass = 'bg-success';
+            } else if (averageValue >= 70) {
+                badgeClass = 'bg-info';
+            } else if (averageValue >= 50) {
+                badgeClass = 'bg-warning';
+            } else if (averageValue > 0) {
+                badgeClass = 'bg-danger';
+            }
+        }
+        
+        badge.className = 'badge ms-2 ' + badgeClass;
+        badge.textContent = displayValue;
+        avgDiv.style.display = 'block';
+        button.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Average';
+    } else {
+        // Hide the average
+        avgDiv.style.display = 'none';
+        button.innerHTML = '<i class="fas fa-chart-line"></i> Show Average';
+    }
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

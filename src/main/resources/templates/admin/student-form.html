@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-graduate"></i>
+                        <span th:if="${student.studentNo == null}">Add New Student</span>
+                        <span th:if="${student.studentNo != null}">Update Student</span>
+                    </h4>
+                </div>
+
+                <div class="card-body">
+                    <!-- Error message display -->
+                    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Error!</strong> <span th:text="${error}">Error message</span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    
+                    <form th:action="@{/admin/saveStudent}" th:object="${student}" method="POST">
+                        <input type="hidden" th:field="*{studentNo}"/>
+                        <input type="hidden" th:field="*{id}"/>
+                        <input type="hidden" th:field="*{person.id}"/>
+
+
+
+                        <div class="row">
+                            <!-- Kişisel Bilgiler -->
+                            <div class="col-md-6">
+                                <h5 class="text-primary mb-3">Personal Information</h5>
+
+                                <div class="mb-3">
+                                    <label for="firstName" class="form-label">First Name <span class="text-danger">*</span></label>
+                                    <input type="text" th:field="*{person.firstName}" id="firstName" class="form-control" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="lastName" class="form-label">Last Name <span class="text-danger">*</span></label>
+                                    <input type="text" th:field="*{person.lastName}" id="lastName" class="form-control" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                                    <input type="password" th:field="*{person.password}" id="password" class="form-control" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="tcNo" class="form-label">TC Number</label>
+                                    <input type="text" th:field="*{person.tcNo}" id="tcNo" class="form-control" maxlength="11">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="birthDate" class="form-label">Birth Date</label>
+                                    <input type="date" th:field="*{person.birthDate}" id="birthDate" class="form-control">
+                                </div>
+                            </div>
+
+                            <!-- Adres ve Akademik Bilgiler -->
+                            <div class="col-md-6">
+                                <h5 class="text-primary mb-3">Address Information</h5>
+
+                                <div class="mb-3">
+                                    <label for="city" class="form-label">City</label>
+                                    <input type="text" th:field="*{person.city}" id="city" class="form-control">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="neighborhood" class="form-label">Neighborhood</label>
+                                    <input type="text" th:field="*{person.neighborhood}" id="neighborhood" class="form-control">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="street" class="form-label">Street</label>
+                                    <input type="text" th:field="*{person.street}" id="street" class="form-control">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="apartment" class="form-label">Apartment</label>
+                                    <input type="text" th:field="*{person.apartment}" id="apartment" class="form-control">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="postalCode" class="form-label">Postal Code</label>
+                                    <input type="text" th:field="*{person.postalCode}" id="postalCode" class="form-control">
+                                </div>
+
+                                <h5 class="text-primary mb-3 mt-4">Academic Information</h5>
+                                
+                                <div class="mb-3">
+                                    <label for="classroom" class="form-label">Classroom <span class="text-danger">*</span></label>
+                                    <select id="classroom" name="classroomCode" class="form-select" required>
+                                        <option value="">-- Select a Classroom --</option>
+                                        <option th:each="c : ${classrooms}" 
+                                                th:value="${c.classroomCode}"
+                                                th:text="${c.classroomCode + ' (' + c.type + ')'}"
+                                                th:selected="${student.classroom?.classroomCode == c.classroomCode}">
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Butonlar -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a th:href="@{/admin/studentList}" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                <span th:if="${student.studentNo == null}">Add Student</span>
+                                <span th:if="${student.studentNo != null}">Update Student</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

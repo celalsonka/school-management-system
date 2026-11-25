@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Discipline Record Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0"><i class="fas fa-exclamation-circle"></i> Discipline Record</h4>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/admin/saveDisciplineRecord}" th:object="${disciplineRecord}" method="post">
+                        <!-- Hidden ID for updates -->
+                        <input type="hidden" name="disciplineRecordId" th:value="${disciplineRecord.disciplineRecordId}">
+                        <input type="hidden" name="studentId" th:value="${student.id}">
+
+                        <div class="mb-3">
+                            <label for="studentName" class="form-label">Student</label>
+                            <input type="text" class="form-control" id="studentName" 
+                                   th:value="${student.person.firstName + ' ' + student.person.lastName}" disabled>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="recordDate" class="form-label">Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="recordDate" th:field="*{recordDate}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="reason" class="form-label">Reason <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="reason" th:field="*{reason}" rows="3" required 
+                                      placeholder="Describe the reason for the discipline record..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="result" class="form-label">Action Taken <span class="text-danger">*</span></label>
+                            <select class="form-control" id="result" th:field="*{result}" required>
+                                <option value="">-- Select Action --</option>
+                                <option value="Warning">Warning</option>
+                                <option value="Detention">Detention</option>
+                                <option value="Suspension">Suspension</option>
+                                <option value="Parent Meeting">Parent Meeting</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-save"></i> Save Record
+                            </button>
+                            <a th:href="@{/admin/disciplineRecordList(studentId=${student.id})}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
